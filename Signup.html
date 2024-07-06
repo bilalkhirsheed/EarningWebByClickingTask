@@ -56,12 +56,12 @@
             const password = document.getElementById('password').value;
             const confirm_password = document.getElementById('confirm_password').value;
 
-            const response = await fetch('http://localhost:3000/api/signup', {
+            const response = await fetch('/api/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fullname, email, username, password, confirm_password })
             });
-
+ 
             const result = await response.json();
 
             alert(result.message); // Display alert with the message from the backend
