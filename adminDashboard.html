@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnHg4C+XfJtzzp29aFQfK5B5DdN5iB02swFfx9e3MF6B8jcn+X4Ppqz5V9fOi25u8gAY0h1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-8">
+        <h1 class="text-3xl font-bold mb-6">Admin Dashboard</h1>
+        <table class="min-w-full bg-white">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Username</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Email</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Amount</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Account Name</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Receipt Image</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">With Draw</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Approved</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Profit</th>
+                    <th class="py-2 px-4 border-b-2 border-gray-200">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="userTable">
+                <!-- User data will be inserted here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Profit Edit Modal -->
+    <div id="profitModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white p-4 rounded-md">
+            <h2 class="text-xl mb-4">Edit Profit</h2>
+            <input type="number" id="profitInput" class="border p-2 w-full mb-4" placeholder="Enter profit in  range of billing amount ">
+            <button id="profitSubmit" class="bg-blue-500 text-white px-4 py-2 rounded">Add</button>
+            <button id="profitCancel" class="bg-gray-500 text-white px-4 py-2 rounded ml-2">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const userTable = document.getElementById('userTable');
+            const profitModal = document.getElementById('profitModal');
+            const profitInput = document.getElementById('profitInput');
+            const profitSubmit = document.getElementById('profitSubmit');
+            const profitCancel = document.getElementById('profitCancel');
+
+            let currentUserId = null;
+            let currentBillingId = null;
+
+            // Check if the userTable element is found
+            if (!userTable) {
+                console.error('userTable element not found');
+                alert('Failed to find user table element. Check console for more details.');
+                return;
+            }
+
+            fetch('http://localhost:3000/api/user-info')
+                .then(response => response.json())
+                .then(data => {
+                    userTable.innerHTML = '';
+                    data.forEach(user => {
+                        user.billings.forEach(billing => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${user.username}</td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${user.email}</td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${billing.amount}</td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${billing.account_name}</td>
+                                <td class="py-4 px-4 border-b flex flex-col gap-6 items-center border-gray-200">
+                                    <img src="data:image/png;base64,${billing.receipt_image.toString('base64')}" alt="Receipt Image" class="w-14 h-12 object-cover">
+                                    <a href="data:image/png;base64,${billing.receipt_image.toString('base64')}" download="receipt_${billing._id}.png" class="ml-2">
+                                       <button class="bg-blue-600 rounded-md py-1 px-2 text-white ">download</button>
+                                    </a>
+                                </td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${user.totalWithdraw}</td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">${billing.isApproved}</td>
+                                  <td class="py-2 px-4 border-b flex flex-col items-center justify-center gap-5 border-gray-200">
+                                    <p>${billing.profit}</p>
+                                    ${billing.isApproved === 'Not Approved' ? '<p>Billing not approved</p>' : `<button class="bg-blue-600 rounded-md py-1 px-2 text-white" onclick="showProfitModal('${user._id}', '${billing._id}')">Edit</button>`}
+                                </td>
+                                <td class="py-4 px-4 border-b text-center border-gray-200">
+                                    <button class="bg-blue-500 text-white px-4 py-2 rounded" onclick="statusChange('${user._id}', '${billing._id}')">Approve</button>
+                                </td>
+                            `;
+                            userTable.appendChild(row);
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    alert('Failed to fetch user data. Check console for more details.');
+                });
+
+            window.statusChange = function(userId, billingId) {
+                console.log(`Status change requested for userId: ${userId}, billingId: ${billingId}`);
+                fetch(`http://localhost:3000/api/updateStatus/${userId}/${billingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ isApproved: true })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Status updated successfully:', data);
+                    alert('Status updated successfully');
+                    location.reload(); // Optionally reload the page to reflect changes
+                })
+                .catch(error => {
+                    console.error('There was a problem with the status change request:', error);
+                    alert('Failed to update status. Check console for more details.');
+                });
+            };
+
+            window.showProfitModal = function(userId, billingId) {
+                currentUserId = userId;
+                currentBillingId = billingId;
+                profitInput.value = '';
+                profitModal.classList.remove('hidden');
+            };
+
+            profitSubmit.addEventListener('click', function() {
+                const profitPercentage = profitInput.value;
+                fetch(`http://localhost:3000/api/updateProfit/${currentUserId}/${currentBillingId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ profitPercentage })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                   
+                    console.log('Profit updated successfully:', data);
+                    alert('Profit updated successfully');
+                    location.reload(); // Optionally reload the page to reflect changes
+                })
+                .catch(error => {
+                    console.error('There was a problem with the profit update request:', error);
+                    alert('Failed to update profit. Check console for more details.');
+                });
+            });
+
+            profitCancel.addEventListener('click', function() {
+                profitModal.classList.add('hidden');
+            });
+        });
+    </script>
+</body>
+</html>
