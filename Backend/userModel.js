@@ -59,6 +59,20 @@ const accountSummarySchema = new mongoose.Schema({
     }
 });
 
+const withDrawSchema=new mongoose.Schema({
+    amount:{
+          type:Number,
+          required:true
+    },
+    accountNo:{
+        type:String,
+          required:true
+    },
+    accountName:{
+        type:String,
+        required:true
+    }
+})
 
 // User schema
 const userSchema = new mongoose.Schema({
@@ -85,7 +99,8 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 6
     },
-    billings: [billingSchema], // Embedding billing schema
+    billings: [billingSchema],
+    withdrawings:[withDrawSchema], // Embedding billing schema
     accountSummary: {
         type: accountSummarySchema,
         default: () => ({}) // Default value to initialize the embedded document

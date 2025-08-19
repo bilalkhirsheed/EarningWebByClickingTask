@@ -15,15 +15,14 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="./output.css" rel="stylesheet">
   </head>
   <body class="bg-[#F7F7FA]">
     <div class="flex min-h-screen">
       <!-- Sidebar -->
      
-     
-      <div class="toggle-div  h-full w-[300px]" style="display: block;">
-        <div class="flex flex-col gap-6 mr-[-20px] ">
+      <div class="toggle-div bg-[#F7F7FA]  absolute h-full w-[250px] lg:w-[300px]" style="display: none;">
+        <div class="flex flex-col  mr-[-20px] ">
             <div class="flex flex-col items-center py-[90px] rounded-bl-3xl gap-4 bg-[#6E00FF]">
        <div class="h-[100px]"></div>
        <div class="bg-white w-[60px] h-[60px] flex justify-center items-center cursor-pointer hover:bg-black hover:text-white ease-in-out transition duration-300 text-blue-800 py-2 px-2 rounded-full">
@@ -31,7 +30,7 @@
        
        </div>
        <div class="flex flex-col items-center ">
-        <p id="usernameBox" class="text-white ">bilal23455</p>
+        <p id="usernameBox" class="text-white "></p>
         <p class="text-gray-800">online</p>
 
        </div>
@@ -42,7 +41,7 @@
        <a href="/Login.html"><p>Logout</p></a> 
        </div>
             </div>
-
+       <div class=" bg-[#F7F7FA]">
             <div class="flex px-2 gap-2 justify-center items-center">
                 <div class="flex w-full flex-col text-white items-center gap-2 rounded-md py-4 px-2 bg-[#6E00FF]">
                     <a href="./plan.html" class="flex  flex-col gap-2">    <div class="flex items-center justify-center"><i><image class="w-[30px] h-[30px]" src="/home.png"></image></i></div>   
@@ -100,8 +99,9 @@
                                    <p class=" text-center font-semibold">Watch <br/> Ads</p>
                                </div>
                             </div>
-                            <div class="w-full px-4">
-                            <div class="bg-[#FFE600] py-4 rounded-md px-2 gap-2 text-white flex flex-col">
+                          </div>
+                            <div class="w-full ">
+                            <div class="bg-[#FFE600]  py-4  px-2 gap-2 text-white flex flex-col">
                             <p>Need Help</p>
                             <p>Contact our 24/7 customer</p>
                             <p>support center</p>
@@ -111,22 +111,23 @@
         </div>
     </div>
 
-
       <!-- Main Content -->
       <div class="flex-1">
         <!-- Top Bar -->
-        <div class="bg-[#2F55D4] w-full h-[70px] flex items-center justify-end py-2 px-4">
+        <div class="bg-[#2F55D4] w-full h-[70px] fixed flex items-center justify-end py-2 px-4">
           <div class="flex items-center gap-4">
-            <div class="text-white cursor-pointer">
-              <i class="fa fa-bars" aria-hidden="true"></i>
+            <div class="text-white cursor-pointer"  onclick="showsidebar()">
+              <i class="fa fa-bars" id="bars-icon" aria-hidden="true"></i>
+        
+              <i class="fa fa-close hidden" id="close-icon" aria-hidden="true"></i>
             </div>
             <div
               class="flex items-center gap-2 bg-[#2A49A6] rounded-full text-white cursor-pointer hover:bg-fuchsia-700 transition ease-in-out duration-300"
-              onclick="showsidebar()"
+             
             >
               <i class="fa fa-user-circle fa-2x" aria-hidden="true"></i>
               <p id="usernameBox1" class="text-[#E5E8E8] hover:text-white transition ease-in-out duration-300 p-2">
-                bilal23343
+               
               </p>
             </div>
           </div>
@@ -134,19 +135,19 @@
 
         <!-- Main Dashboard -->
         <div class="bg-[#6E00FF] h-[400px] w-full px-4 rounded-bl-3xl">
-          <div class="flex flex-col gap-8 py-6">
+          <div class="flex flex-col px-4 gap-8 py-6">
             <div class="text-[20px] font-semibold text-[#F6FFFF]">
               <p>Home-Dashboard</p>
             </div>
             <!-- Buttons Section -->
-            <div class="bg-white py-6 px-8 rounded-lg flex items-center justify-between">
-              <button class="bg-red-600 text-white hover:bg-red-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
+            <div class="bg-white py-6 px-8 rounded-lg flex flex-wrap lg:flex-nowrap items-center justify-between">
+              <button class="bg-red-600 mb-2 text-white hover:bg-red-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
                 Deposit
               </button>
-              <button class="bg-blue-600 text-white hover:bg-blue-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
+              <button class="bg-blue-600 mb-2 text-white hover:bg-blue-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
                 Watch Ad
               </button>
-              <button class="bg-green-600 text-white hover:bg-green-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
+              <button class="bg-green-600 mb-2 text-white hover:bg-green-800 transition ease-in-out duration-300 py-1 px-4 rounded-md">
                 Withdraw
               </button>
             </div>
@@ -339,7 +340,7 @@
          };
          document.getElementById('profitSubmit').addEventListener('click', function() {
            const withDrawAmount = parseInt(document.getElementById('profitInput').value);
-           fetch('http://localhost:3000/api/withdraw', {
+           fetch('https://www.ernings.online/api/withdraw', {
                method: 'POST',
                headers: {
                    'Content-Type': 'application/json'
@@ -365,7 +366,7 @@
                    profitModal.classList.add('hidden');
                });
        document.addEventListener("DOMContentLoaded", function() {
-         fetch("http://localhost:3000/api/account-summary", {
+         fetch("https://www.ernings.online/api/account-summary", {
            method: "GET",
            headers: {
              "Content-Type": "application/json"
@@ -391,7 +392,7 @@
        // Iterate over each element to add click event listener
        watchAdButtons.forEach(button => {
            button.addEventListener('click', function() {
-               fetch('http://localhost:3000/api/click-ad', {
+               fetch('https://www.ernings.online/api/click-ad', {
                    method: 'POST',
                    headers: {
                        'Content-Type': 'application/json'

@@ -10,17 +10,18 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// // Define CORS options
-// const corsOptions = {
-//     origin: 'https://www.ernings.online', // Replace with your actual frontend URL
-//     methods: ['GET', 'POST'], // Add the HTTP methods you support
-//     allowedHeaders: ['Content-Type', 'Authorization'], // Add the headers you want to allow
-//   };
-  
- 
-//   app.use(cors(corsOptions));
-app.use(cors());
+const corsOptions = {
+    origin: 'https://www.ernings.online',
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+// Serve static files from the root directory
 app.use(express.static(path.join(__dirname, '..')));
 
 app.use('/api', userRoutes);
 
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});

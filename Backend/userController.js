@@ -14,18 +14,22 @@ exports.signup = async (req, res) => {
     }
 
     const newUser = new User({ fullname, email, username, password });
+
     try {
         await newUser.save();
         userLoginEmail = email;
         return res.json({ success: true, message: 'User registered successfully', dashboard: 'user' });
     } catch (err) {
+        console.error('Error during user registration:', err); // Log the error for debugging
+
         if (err.code === 11000) {
             return res.status(400).json({ success: false, message: 'Email already exists' });
         } else {
-            return res.status(400).json({ success: false, message: 'Failed to register user: ' + err.message });
+            return res.status(500).json({ success: false, message: 'Failed to register user: ' + err.message });
         }
     }
 };
+
 
 exports.login = async (req, res) => {
     const { email, password } = req.body;
@@ -50,9 +54,10 @@ exports.login = async (req, res) => {
 };
 
 
+
 exports.billing = async (req, res) => {
     try {
-        const { amount, account_name } = req.body;
+        const { amount, account_name} = req.body;
         const receipt_image = req.file.buffer; // Get image buffer from multer
 
         const user = await User.findOne({ email: userLoginEmail });
@@ -72,35 +77,114 @@ exports.billing = async (req, res) => {
 };
 
 
+exports.DeleteWholeBilling = async (req, res) => {
+    const { userId, billingId } = req.params;
+    
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const billingIndex = user.billings.findIndex(billing => billing._id.toString() === billingId);
+        if (billingIndex === -1) {
+            return res.status(404).json({ message: 'Billing not found' });
+        }
+
+        user.billings.splice(billingIndex, 1);
+        await user.save();
+
+        return res.status(200).json({ message: 'Billing deleted successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
 
 exports.getUserInfo = async (req, res) => {
     try {
+        console.log('Fetching user information...');
         const users = await User.find();
 
         if (!users || users.length === 0) {
-            return res.status(400).send('No users found');
+            console.log('No users found');
+            return res.status(404).json({ error: 'No users found' });
         }
 
         const usersInfo = users.map(user => ({
             _id: user._id,
             username: user.username,
             email: user.email,
-            totalWithdraw: user.accountSummary.TotalWithdraw,
+            totalWithdraw: user.accountSummary ? user.accountSummary.TotalWithdraw : 0,
             billings: user.billings.map(billing => ({
                 _id: billing._id,
                 amount: billing.amount,
-                profit:billing.profit,
+                profit: billing.profit,
                 account_name: billing.account_name,
-                receipt_image: billing.receipt_image.toString('base64'), // Convert buffer to base64 string
+                receipt_image: billing.receipt_image ? billing.receipt_image.toString('base64') : '',
                 isApproved: billing.isApproved
             }))
         }));
-      //  console.log( totalWithdraw)
+
+        console.log('User information retrieved successfully:', usersInfo);
         res.status(200).json(usersInfo);
     } catch (err) {
-        res.status(500).send('Failed to retrieve user information: ' + err.message);
+        console.error('Failed to retrieve user information:', err.message);
+        res.status(500).json({ error: 'Failed to retrieve user information: ' + err.message });
     }
 };
+exports.getUserWithDrawInfo = async (req, res) => {
+    try {
+        console.log('Fetching user information...');
+        const users = await User.find();
+
+        if (!users || users.length === 0) {
+            console.log('No users found');
+            return res.status(404).json({ error: 'No users found' });
+        }
+
+        const userswithdraw = users.map(user => ({
+            username: user.username,
+            email: user.email,
+            withdrawings: user.withdrawings.map(withdraw => ({
+                amount: withdraw.amount,
+                accountNo: withdraw.accountNo,
+                accountName: withdraw.accountName
+            }))
+        }));
+
+        console.log('User information retrieved successfully:',userswithdraw);
+        res.status(200).json(userswithdraw);
+    } catch (err) {
+        console.error('Failed to retrieve user information:', err.message);
+        res.status(500).json({ error: 'Failed to retrieve user information: ' + err.message });
+    }
+};
+// userController.js
+// In userController.js
+exports.DeleteWholeWithDraw = async (req, res) => {
+    const { userId, withdrawId } = req.params;
+    
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const withdrawIndex = user.withdrawings.findIndex(withdraw => withdraw._id.toString() === withdrawId);
+        if (withdrawIndex === -1) {
+            return res.status(404).json({ message: 'Withdrawal not found' });
+        }
+
+        user.withdrawings.splice(withdrawIndex, 1);
+        await user.save();
+
+        return res.status(200).json({ message: 'Withdrawal deleted successfully' });
+    } catch (error) {
+        return res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+};
+
 
 exports.updateStatus = async (req, res) => {
     const { userId, billingId } = req.params;
@@ -137,9 +221,7 @@ exports.updateProfit = async (req, res) => {
     const { userId, billingId } = req.params;
     const { profitPercentage } = req.body;
 
-    if (profitPercentage < 0 || profitPercentage > 100) {
-        return res.status(400).json({ message: 'Invalid profit percentage' });
-    }
+
 
     try {
         const user = await User.findById(userId);
@@ -246,9 +328,8 @@ console.log(userLoginEmail);
 exports.WithDraw = async (req, res) => {
     try {
         const user = await User.findOne({ email: userLoginEmail });
-        const { withDrawAmount } = req.body;
+        const { withDrawAmount,withDrawAccountNo,withDrawAccountName } = req.body;
 
-        console.log(userLoginEmail);
         if (!user) {
             return res.status(404).json({ success: false, message: 'User not found' });
         }
@@ -262,12 +343,17 @@ exports.WithDraw = async (req, res) => {
         if (accountSummary.TotalBalance < withDrawAmount) {
             return res.status(400).json({ success: false, message: 'Balance is less than withdrawal amount' });
         } else {
-            console.log("We are in user withdraw");
-            console.log(accountSummary.TotalBalance);
-            console.log(withDrawAmount);
             user.accountSummary.TotalBalance = accountSummary.TotalBalance - withDrawAmount;
             user.accountSummary.TotalWithdraw += withDrawAmount;
-            console.log(user.accountSummary.TotalBalance);
+
+            // Add new withdrawal to withdrawings array
+            const newWithdrawal = {
+                amount: withDrawAmount,
+                accountNo: withDrawAccountNo,
+                accountName: withDrawAccountName
+            };
+            user.withdrawings.push(newWithdrawal);
+
             await user.save();
 
             return res.status(200).json({ success: true, message: 'Withdrawal done successfully' });

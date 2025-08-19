@@ -9,6 +9,7 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css"
         rel="stylesheet"
     />
+    <link href="./output.css" rel="stylesheet">
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -17,11 +18,12 @@
         referrerpolicy="no-referrer"
     />
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="./script.js"></script>
 </head>
 <body class="bg-[#F7F7FA]">
 <div class="flex min-h-screen">
-    <div class="toggle-div  h-full w-[300px]" style="display: block;">
-        <div class="flex flex-col gap-6 mr-[-20px] ">
+    <div class="toggle-div bg-[#F7F7FA]  absolute h-full w-[250px] lg:w-[300px]" style="display: none;">
+        <div class="flex flex-col  mr-[-20px] ">
             <div class="flex flex-col items-center py-[90px] rounded-bl-3xl gap-4 bg-[#6E00FF]">
        <div class="h-[100px]"></div>
        <div class="bg-white w-[60px] h-[60px] flex justify-center items-center cursor-pointer hover:bg-black hover:text-white ease-in-out transition duration-300 text-blue-800 py-2 px-2 rounded-full">
@@ -29,7 +31,7 @@
        
        </div>
        <div class="flex flex-col items-center ">
-        <p id="usernameBox" class="text-white ">bilal23455</p>
+        <p id="usernameBox" class="text-white "></p>
         <p class="text-gray-800">online</p>
 
        </div>
@@ -40,7 +42,7 @@
        <a href="/Login.html"><p>Logout</p></a> 
        </div>
             </div>
-
+       <div class=" bg-[#F7F7FA]">
             <div class="flex px-2 gap-2 justify-center items-center">
                 <div class="flex w-full flex-col text-white items-center gap-2 rounded-md py-4 px-2 bg-[#6E00FF]">
                     <a href="./plan.html" class="flex  flex-col gap-2">    <div class="flex items-center justify-center"><i><image class="w-[30px] h-[30px]" src="/home.png"></image></i></div>   
@@ -98,8 +100,9 @@
                                    <p class=" text-center font-semibold">Watch <br/> Ads</p>
                                </div>
                             </div>
-                            <div class="w-full px-4">
-                            <div class="bg-[#FFE600] py-4 rounded-md px-2 gap-2 text-white flex flex-col">
+                          </div>
+                            <div class="w-full ">
+                            <div class="bg-[#FFE600]  py-4  px-2 gap-2 text-white flex flex-col">
                             <p>Need Help</p>
                             <p>Contact our 24/7 customer</p>
                             <p>support center</p>
@@ -109,21 +112,24 @@
         </div>
     </div>
 
+
     <!-- Main Content -->
     <div class="flex-1">
         <!-- Top Bar -->
-        <div class="bg-[#2F55D4] w-full h-[70px] flex items-center justify-end py-2 px-4">
+        <div class="bg-[#2F55D4] w-full h-[70px] flex fixed items-center justify-end py-2 px-4">
             <div class="flex items-center gap-4">
-                <div class="text-white cursor-pointer">
-                    <i class="fa fa-bars" aria-hidden="true"></i>
+                <div class="text-white cursor-pointer"   onclick="showsidebar()">
+                    <i class="fa fa-bars" id="bars-icon" aria-hidden="true"></i>
+        
+                    <i class="fa fa-close hidden" id="close-icon" aria-hidden="true"></i>
                 </div>
                 <div
                     class="flex items-center gap-2 bg-[#2A49A6] rounded-full text-white cursor-pointer hover:bg-fuchsia-700 transition ease-in-out duration-300"
-                    onclick="showsidebar()"
+                  
                 >
                     <i class="fa fa-user-circle fa-2x" aria-hidden="true"></i>
                     <p id="usernameBox1" class="text-[#E5E8E8] hover:text-white transition ease-in-out duration-300 p-2">
-                        bilal23343
+                        
                     </p>
                 </div>
             </div>
@@ -137,20 +143,21 @@
                     <p><span class="font-bold">Account Number:</span> 03278134806</p>
                     <p><span class="font-bold">Account Name:</span> Shazia Nasreen</p>
                     <p><span class="font-bold">Account Type:</span> JazzCash</p>
-                    <p><span class="font-bold">Note:</span> <span class="bg-green-400 p-2 rounded-sm">Deposit your amount on provided account and upload receipt_image below</span></p>
+                    <p><span class="font-bold">Note:</span> <span class="bg-green-400 p-0 lg:p-2 rounded-sm">Deposit your amount on provided account and upload receipt_image below</span></p>
                 </div>
                 <div class="mb-4">
                     <label for="amount" class="block text-sm font-medium text-gray-700">Amount Paid (PKR)</label>
                     <input type="number" id="amount" name="amount" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                 </div>
                 <div class="mb-4">
-                    <label for="account_name" class="block text-sm font-medium text-gray-700">Account Name</label>
+                    <label for="account_name" class="block text-sm font-medium text-gray-700">Deposit Account Name</label>
                     <input type="text" id="account_name" name="account_name" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                 </div>
                 <div class="mb-4">
                     <label for="receipt_image" class="block text-sm font-medium text-gray-700">Receipt Image</label>
                     <input type="file" id="receipt_image" name="receipt_image" accept="image/*" class="mt-1 px-3 py-2 block w-full border border-gray-300 rounded-md focus:outline-none focus:border-blue-500 focus:ring focus:ring-blue-200" required>
                 </div>
+               
                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">Submit</button>
             </form>
         </div>
@@ -186,7 +193,7 @@
       };
       document.getElementById('profitSubmit').addEventListener('click', function() {
         const withDrawAmount = parseInt(document.getElementById('profitInput').value);
-        fetch('http://localhost:3000/api/withdraw', {
+        fetch('https://www.ernings.online/api/withdraw', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -200,8 +207,8 @@
             }
 
             console.log('Withdrawal done successfully:', data);
-            alert(data.message); // Show success message
-            location.reload(); // Optionally reload the page to reflect changes
+            alert(data.message); 
+            location.reload(); 
         })
         .catch(error => {
             console.error('There was a problem with the withdrawal request:', error);
@@ -212,7 +219,7 @@
                 profitModal.classList.add('hidden');
             });
     document.addEventListener("DOMContentLoaded", function() {
-      fetch("http://localhost:3000/api/account-summary", {
+      fetch("https://www.ernings.online/api/account-summary", {
         method: "GET",
         headers: {
           "Content-Type": "application/json"
@@ -237,7 +244,7 @@
     // Iterate over each element to add click event listener
     watchAdButtons.forEach(button => {
         button.addEventListener('click', function() {
-            fetch('http://localhost:3000/api/click-ad', {
+            fetch('https://www.ernings.online/api/click-ad', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -255,15 +262,14 @@
         });
     });
 });
-    document.getElementById('billingForm').addEventListener('submit', async function (e) {
+document.getElementById('billingForm').addEventListener('submit', async function (e) {
         e.preventDefault();
 
         const formData = new FormData();
         formData.append('amount', document.getElementById('amount').value);
         formData.append('account_name', document.getElementById('account_name').value);
         formData.append('receipt_image', document.getElementById('receipt_image').files[0]);
-
-        const response = await fetch('http://localhost:3000/api/billing', {
+        const response = await fetch('https://www.ernings.online/api/billing', {
             method: 'POST',
             body: formData
         });
@@ -276,6 +282,7 @@
             window.location.href = 'userDashboard.html';
         }
     });
+
 </script>
 </body>
 </html>
