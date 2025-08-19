@@ -26,6 +26,3 @@ APIs & Integrations
 
  Task APIs for fetching and assigning tasks dynamically
 
-💳 Payment/Wallet Integration (Stripe/PayPal ready)
-
-📊 Admin reporting APIs
